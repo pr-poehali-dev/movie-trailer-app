@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import Icon from '@/components/ui/icon';
 import { kinopoiskApi, KinopoiskMovie, KinopoiskStaff } from '@/services/kinopoiskApi';
 import ApiKeySetup from '@/components/ApiKeySetup';
+import MovieSearchById from '@/components/MovieSearchById';
 
 interface MovieSearchApiProps {
   onAddToFavorites?: (movie: any) => void;
@@ -130,8 +131,16 @@ export default function MovieSearchApi({ onAddToFavorites, favorites = [] }: Mov
 
   return (
     <div className="space-y-6">
-      {/* Поиск */}
-      <form onSubmit={handleSearch} className="flex gap-3">
+      {/* Поиск по ID */}
+      <MovieSearchById 
+        onAddToFavorites={onAddToFavorites}
+        favorites={favorites}
+      />
+
+      {/* Поиск по названию */}
+      <div className="border-t pt-6">
+        <h3 className="text-lg font-semibold mb-4">Поиск по названию</h3>
+        <form onSubmit={handleSearch} className="flex gap-3">
         <Input
           placeholder="Поиск фильмов на Кинопоиске..."
           value={searchQuery}
