@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import Icon from '@/components/ui/icon';
+import MovieSearchApi from '@/components/MovieSearchApi';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -541,11 +542,23 @@ const Index = () => {
         {/* Tabs Section */}
         <section className="animate-fade-in">
           <Tabs defaultValue="genres" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 max-w-lg">
+            <TabsList className="grid w-full grid-cols-4 max-w-2xl">
+              <TabsTrigger value="search">Поиск API</TabsTrigger>
               <TabsTrigger value="genres">Жанры</TabsTrigger>
               <TabsTrigger value="favorites">Избранное</TabsTrigger>
               <TabsTrigger value="lists">Мои списки</TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="search" className="mt-6">
+              <MovieSearchApi 
+                onAddToFavorites={(movie) => {
+                  if (!favorites.includes(movie.id)) {
+                    setFavorites([...favorites, movie.id]);
+                  }
+                }}
+                favorites={favorites}
+              />
+            </TabsContent>
             
             <TabsContent value="genres" className="mt-6">
               <div className="space-y-4">
