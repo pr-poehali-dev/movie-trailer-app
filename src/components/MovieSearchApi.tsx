@@ -141,199 +141,200 @@ export default function MovieSearchApi({ onAddToFavorites, favorites = [] }: Mov
       <div className="border-t pt-6">
         <h3 className="text-lg font-semibold mb-4">Поиск по названию</h3>
         <form onSubmit={handleSearch} className="flex gap-3">
-        <Input
-          placeholder="Поиск фильмов на Кинопоиске..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1"
-        />
-        <Button type="submit" disabled={loading}>
-          {loading ? <Icon name="Loader2" size={16} className="animate-spin" /> : <Icon name="Search" size={16} />}
-        </Button>
-      </form>
+          <Input
+            placeholder="Поиск фильмов на Кинопоиске..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1"
+          />
+          <Button type="submit" disabled={loading}>
+            {loading ? <Icon name="Loader2" size={16} className="animate-spin" /> : <Icon name="Search" size={16} />}
+          </Button>
+        </form>
 
-      {/* Ошибка */}
-      {error && (
-        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-          <div className="flex items-center space-x-2">
-            <Icon name="AlertCircle" size={16} className="text-destructive" />
-            <span className="text-destructive text-sm">{error}</span>
+        {/* Ошибка */}
+        {error && (
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mt-4">
+            <div className="flex items-center space-x-2">
+              <Icon name="AlertCircle" size={16} className="text-destructive" />
+              <span className="text-destructive text-sm">{error}</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Результаты поиска */}
-      {movies.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold">Результаты поиска ({movies.length} из найденных)</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {movies.map((movie) => (
-              <Dialog key={movie.kinopoiskId}>
-                <DialogTrigger asChild>
-                  <Card 
-                    className="group cursor-pointer hover:scale-105 transition-all duration-300 bg-card border-border"
-                    onClick={() => handleMovieSelect(movie)}
-                  >
-                    <CardContent className="p-0">
-                      <div className="relative aspect-[2/3] overflow-hidden rounded-t-lg">
+        {/* Результаты поиска */}
+        {movies.length > 0 && (
+          <div className="space-y-4 mt-6">
+            <h4 className="text-xl font-semibold">Результаты поиска ({movies.length} из найденных)</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {movies.map((movie) => (
+                <Dialog key={movie.kinopoiskId}>
+                  <DialogTrigger asChild>
+                    <Card 
+                      className="group cursor-pointer hover:scale-105 transition-all duration-300 bg-card border-border"
+                      onClick={() => handleMovieSelect(movie)}
+                    >
+                      <CardContent className="p-0">
+                        <div className="relative aspect-[2/3] overflow-hidden rounded-t-lg">
+                          <img 
+                            src={movie.posterUrlPreview} 
+                            alt={movie.nameRu || movie.nameEn || ''}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/placeholder-movie.jpg';
+                            }}
+                          />
+                          <div className="absolute top-2 right-2">
+                            <Button 
+                              size="sm" 
+                              variant="secondary" 
+                              className="h-8 w-8 p-0 bg-primary/20 hover:bg-primary/30" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                addToFavorites(movie);
+                              }}
+                            >
+                              <Icon name={favorites.includes(movie.kinopoiskId) ? "Heart" : "Plus"} size={14} />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="p-3">
+                          <h4 className="font-semibold text-xs mb-1 truncate">
+                            {movie.nameRu || movie.nameEn || movie.nameOriginal}
+                          </h4>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>{movie.year}</span>
+                            {movie.ratingKinopoisk && (
+                              <div className="flex items-center">
+                                <Icon name="Star" size={10} className="mr-1 text-accent" />
+                                {movie.ratingKinopoisk.toFixed(1)}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </DialogTrigger>
+
+                  {/* Модальное окно с деталями */}
+                  <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle className="text-2xl">
+                        {movie.nameRu || movie.nameEn || movie.nameOriginal}
+                      </DialogTitle>
+                    </DialogHeader>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
                         <img 
-                          src={movie.posterUrlPreview} 
+                          src={movie.posterUrl} 
                           alt={movie.nameRu || movie.nameEn || ''}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          className="w-full rounded-lg"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = '/placeholder-movie.jpg';
                           }}
                         />
-                        <div className="absolute top-2 right-2">
-                          <Button 
-                            size="sm" 
-                            variant="secondary" 
-                            className="h-8 w-8 p-0 bg-primary/20 hover:bg-primary/30" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              addToFavorites(movie);
-                            }}
-                          >
-                            <Icon name={favorites.includes(movie.kinopoiskId) ? "Heart" : "Plus"} size={14} />
-                          </Button>
+                        <div className="flex flex-wrap gap-2">
+                          {movie.ratingKinopoisk && (
+                            <Badge variant="secondary">
+                              <Icon name="Star" size={14} className="mr-1" />
+                              {movie.ratingKinopoisk.toFixed(1)}
+                            </Badge>
+                          )}
+                          {movie.year && <Badge variant="outline">{movie.year}</Badge>}
+                          {movie.filmLength && <Badge variant="outline">{formatDuration(movie.filmLength)}</Badge>}
+                          {movie.genres.map((genre, index) => (
+                            <Badge key={index}>{genre.genre}</Badge>
+                          ))}
                         </div>
                       </div>
-                      <div className="p-3">
-                        <h4 className="font-semibold text-xs mb-1 truncate">
-                          {movie.nameRu || movie.nameEn || movie.nameOriginal}
-                        </h4>
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>{movie.year}</span>
-                          {movie.ratingKinopoisk && (
-                            <div className="flex items-center">
-                              <Icon name="Star" size={10} className="mr-1 text-accent" />
-                              {movie.ratingKinopoisk.toFixed(1)}
+                      
+                      <div className="space-y-4">
+                        {movie.description && (
+                          <div>
+                            <h4 className="font-semibold mb-2">Описание</h4>
+                            <p className="text-muted-foreground text-sm leading-relaxed">
+                              {movie.description}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {movieStaff.length > 0 && (
+                          <>
+                            <div>
+                              <h4 className="font-semibold mb-2">Режиссер</h4>
+                              <p className="text-sm">{getDirectors(movieStaff)}</p>
                             </div>
+                            
+                            <div>
+                              <h4 className="font-semibold mb-2">В ролях</h4>
+                              <p className="text-sm text-muted-foreground">{getActors(movieStaff)}</p>
+                            </div>
+                          </>
+                        )}
+                        
+                        {movie.countries.length > 0 && (
+                          <div>
+                            <h4 className="font-semibold mb-2">Страна</h4>
+                            <p className="text-sm">{movie.countries.map(c => c.country).join(', ')}</p>
+                          </div>
+                        )}
+                        
+                        <div className="flex space-x-3 pt-4">
+                          <Button 
+                            className="flex-1"
+                            onClick={() => addToFavorites(movie)}
+                          >
+                            <Icon name={favorites.includes(movie.kinopoiskId) ? "Heart" : "Plus"} size={16} className="mr-2" />
+                            {favorites.includes(movie.kinopoiskId) ? "В избранном" : "В избранное"}
+                          </Button>
+                          
+                          {movie.webUrl && (
+                            <Button variant="outline" className="flex-1" asChild>
+                              <a href={movie.webUrl} target="_blank" rel="noopener noreferrer">
+                                <Icon name="ExternalLink" size={16} className="mr-2" />
+                                Кинопоиск
+                              </a>
+                            </Button>
                           )}
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                </DialogTrigger>
-
-                {/* Модальное окно с деталями */}
-                <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl">
-                      {movie.nameRu || movie.nameEn || movie.nameOriginal}
-                    </DialogTitle>
-                  </DialogHeader>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <img 
-                        src={movie.posterUrl} 
-                        alt={movie.nameRu || movie.nameEn || ''}
-                        className="w-full rounded-lg"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/placeholder-movie.jpg';
-                        }}
-                      />
-                      <div className="flex flex-wrap gap-2">
-                        {movie.ratingKinopoisk && (
-                          <Badge variant="secondary">
-                            <Icon name="Star" size={14} className="mr-1" />
-                            {movie.ratingKinopoisk.toFixed(1)}
-                          </Badge>
-                        )}
-                        {movie.year && <Badge variant="outline">{movie.year}</Badge>}
-                        {movie.filmLength && <Badge variant="outline">{formatDuration(movie.filmLength)}</Badge>}
-                        {movie.genres.map((genre, index) => (
-                          <Badge key={index}>{genre.genre}</Badge>
-                        ))}
-                      </div>
                     </div>
-                    
-                    <div className="space-y-4">
-                      {movie.description && (
-                        <div>
-                          <h4 className="font-semibold mb-2">Описание</h4>
-                          <p className="text-muted-foreground text-sm leading-relaxed">
-                            {movie.description}
-                          </p>
-                        </div>
-                      )}
-                      
-                      {movieStaff.length > 0 && (
-                        <>
-                          <div>
-                            <h4 className="font-semibold mb-2">Режиссер</h4>
-                            <p className="text-sm">{getDirectors(movieStaff)}</p>
-                          </div>
-                          
-                          <div>
-                            <h4 className="font-semibold mb-2">В ролях</h4>
-                            <p className="text-sm text-muted-foreground">{getActors(movieStaff)}</p>
-                          </div>
-                        </>
-                      )}
-                      
-                      {movie.countries.length > 0 && (
-                        <div>
-                          <h4 className="font-semibold mb-2">Страна</h4>
-                          <p className="text-sm">{movie.countries.map(c => c.country).join(', ')}</p>
-                        </div>
-                      )}
-                      
-                      <div className="flex space-x-3 pt-4">
-                        <Button 
-                          className="flex-1"
-                          onClick={() => addToFavorites(movie)}
-                        >
-                          <Icon name={favorites.includes(movie.kinopoiskId) ? "Heart" : "Plus"} size={16} className="mr-2" />
-                          {favorites.includes(movie.kinopoiskId) ? "В избранном" : "В избранное"}
-                        </Button>
-                        
-                        {movie.webUrl && (
-                          <Button variant="outline" className="flex-1" asChild>
-                            <a href={movie.webUrl} target="_blank" rel="noopener noreferrer">
-                              <Icon name="ExternalLink" size={16} className="mr-2" />
-                              Кинопоиск
-                            </a>
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            ))}
-          </div>
-
-          {/* Кнопка "Загрузить еще" */}
-          {page < totalPages && (
-            <div className="text-center">
-              <Button onClick={loadMore} disabled={loading}>
-                {loading ? (
-                  <>
-                    <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
-                    Загружаем...
-                  </>
-                ) : (
-                  <>
-                    <Icon name="ChevronDown" size={16} className="mr-2" />
-                    Загрузить еще
-                  </>
-                )}
-              </Button>
+                  </DialogContent>
+                </Dialog>
+              ))}
             </div>
-          )}
-        </div>
-      )}
 
-      {/* Пустое состояние */}
-      {searchQuery && !loading && movies.length === 0 && !error && (
-        <div className="text-center py-12">
-          <Icon name="Search" size={48} className="mx-auto text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">Фильмы не найдены</p>
-          <p className="text-sm text-muted-foreground">Попробуйте изменить запрос</p>
-        </div>
-      )}
+            {/* Кнопка "Загрузить еще" */}
+            {page < totalPages && (
+              <div className="text-center">
+                <Button onClick={loadMore} disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
+                      Загружаем...
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="ChevronDown" size={16} className="mr-2" />
+                      Загрузить еще
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Пустое состояние */}
+        {searchQuery && !loading && movies.length === 0 && !error && (
+          <div className="text-center py-12">
+            <Icon name="Search" size={48} className="mx-auto text-muted-foreground mb-4" />
+            <p className="text-muted-foreground">Фильмы не найдены</p>
+            <p className="text-sm text-muted-foreground">Попробуйте изменить запрос</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
